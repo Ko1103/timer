@@ -84,7 +84,8 @@
     ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
-      "\\.(css|less|sass|scss)$": "identity-obj-proxy"
+      "\\.(css|less|sass|scss)$": "identity-obj-proxy",
+      "^@/(.*)$": "<rootDir>/src/$1"
     },
     "setupFiles": [
       "./.erb/scripts/check-build-exists.ts"
@@ -103,6 +104,8 @@
   },
   "dependencies": {
     "@electron/notarize": "^3.0.0",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "electron-debug": "^4.1.0",
