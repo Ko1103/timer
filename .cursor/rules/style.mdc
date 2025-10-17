@@ -1,0 +1,13 @@
+---
+alwaysApply: true
+---
+
+このレポジトリはMac/Windowsで動くタイマーアプリを作っています。
+ElectronとReactを使ったプロジェクトです。
+
+- nodejs v20
+- electron
+- react
+- tailwindcss
+
+
