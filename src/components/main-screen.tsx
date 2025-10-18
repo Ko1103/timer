@@ -3,42 +3,8 @@
 import { CountdownTimer } from '@/components/countdown-timer';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import { PlayIcon } from 'lucide-react';
-import React, { useState } from 'react';
-
-const TimerButton: React.FC<{
-  minutes: number;
-  type: 'focus' | 'rest';
-  onClick: () => void;
-}> = ({ minutes, type, onClick }) => {
-  return (
-    <Button
-      onClick={onClick}
-      size="sm"
-      className={cn(
-        'w-full text-lg font-semibold h-14 flex items-center justify-center gap-2',
-        type === 'focus'
-          ? 'bg-blue-600 hover:bg-blue-700'
-          : 'bg-emerald-600 hover:bg-emerald-700',
-      )}
-    >
-      <span className="text-2xl">{minutes}</span> minutes
-      <PlayIcon className="size-4" />
-    </Button>
-  );
-};
+import { useState } from 'react';
 
 export function MainScreen() {
   const [timerMode, setTimerMode] = useState<'Focus' | 'Rest' | null>(null);
@@ -108,8 +74,9 @@ export function MainScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-md mx-auto p-8 bg-card">
-        <div className="flex flex-col gap-8">
-          <div className="space-y-2">
+        <div className="text-2xl font-bold text-muted-foreground">始める</div>
+        <div className="space-y-6">
+          {/* <div className="space-y-2">
             {savedGoalHours === null ? (
               // Today's Work Time
               <div className="text-center space-y-2">
@@ -167,7 +134,7 @@ export function MainScreen() {
                 </DialogContent>
               </Dialog>
             </div>
-          </div>
+          </div> */}
 
           {/* <div className="space-y-4 pt-4 border-t border-border">
             <h3 className="text-sm font-medium text-muted-foreground text-center">
@@ -246,43 +213,34 @@ export function MainScreen() {
 
           {/* Button Section */}
           <div className="space-y-4 border-t border-border">
-            <div className="text-center mt-4 text-lg font-medium text-muted-foreground">
-              Focus
+            <div className="flex flex-col gap-3 ">
+              <Button className="h-14 w-full text-lg bg-emerald-300 justify-left">
+                やる気ない： 5-15-30分セット
+              </Button>
+              <Button className="h-14 w-full text-lg justify-left bg-emerald-500">
+                いつも通り： 30-30-30分セット
+              </Button>
+              <Button className="h-14 w-full text-lg justify-left bg-emerald-700">
+                やる気満々： 30-60-60分セット
+              </Button>
+              <Button className="h-14 w-full text-lg justify-left bg-emerald-900">
+                禅{'　　　　'}：60-60-60分セット
+              </Button>
             </div>
-            <div className="flex flex-col gap-3">
-              <TimerButton
-                minutes={15}
-                type="focus"
-                onClick={() => {
-                  setTimerMinutes(15);
-                  setTimerMode('Focus');
-                }}
-              />
-              <TimerButton
-                minutes={30}
-                type="focus"
-                onClick={() => {
-                  setTimerMinutes(30);
-                  setTimerMode('Focus');
-                }}
-              />
-              <TimerButton
-                minutes={60}
-                type="focus"
-                onClick={() => {
-                  setTimerMinutes(60);
-                  setTimerMode('Focus');
-                }}
-              />
-              <TimerButton
-                minutes={90}
-                type="focus"
-                onClick={() => {
-                  setTimerMinutes(90);
-                  setTimerMode('Focus');
-                }}
-              />
-            </div>
+          </div>
+          <div className="border-t border-border pt-4 space-x-2">
+            <Button className="text-muted bg-emerald-300 rounded-full bg">
+              15:00 <PlayIcon className="size-4" />
+            </Button>
+            <Button className="text-muted bg-emerald-500 rounded-full">
+              30:00 <PlayIcon className="size-4" />
+            </Button>
+            <Button className="text-muted bg-emerald-700 rounded-full">
+              60:00 <PlayIcon className="size-4" />
+            </Button>
+            <Button className="text-muted bg-emerald-900 rounded-full">
+              90:00 <PlayIcon className="size-4" />
+            </Button>
           </div>
         </div>
       </Card>
