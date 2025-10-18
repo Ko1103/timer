@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
-import { dependencies } from '../../../package.json';
+// eslint-disable-next-line import/no-relative-packages
+import { dependencies } from '../../release/app/package.json';
 import webpackPaths from '../configs/webpack.paths';
 
 if (
