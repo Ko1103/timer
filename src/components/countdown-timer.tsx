@@ -2,21 +2,22 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useCallback, useEffect, useState } from 'react';
+import { TimerMode } from '@/hooks/use-timer';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface CountdownTimerProps {
-  title: 'Rest' | 'Focus';
+  title: TimerMode;
   initialSeconds: number;
   onComplete?: () => void;
   onCancel?: () => void;
 }
 
-export function CountdownTimer({
+export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   title,
   initialSeconds,
   onComplete,
   onCancel,
-}: CountdownTimerProps) {
+}) => {
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
   const [isRunning, setIsRunning] = useState(true);
 
@@ -55,7 +56,7 @@ export function CountdownTimer({
   };
 
   const progressRatio = initialSeconds
-    ? title === 'Focus'
+    ? title === 'focus'
       ? timeLeft / initialSeconds
       : (initialSeconds - timeLeft) / initialSeconds
     : 0;
@@ -101,7 +102,7 @@ export function CountdownTimer({
               strokeDashoffset={`${strokeDashoffset}`}
               strokeLinecap="round"
               className={`transition-all duration-1000 ease-linear ${
-                title === 'Focus' ? 'text-blue-600' : 'text-emerald-600'
+                title === 'focus' ? 'text-blue-600' : 'text-emerald-600'
               }`}
             />
           </svg>
@@ -126,4 +127,4 @@ export function CountdownTimer({
       </div>
     </Card>
   );
-}
+};

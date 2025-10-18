@@ -3,67 +3,60 @@
 import { CountdownTimer } from '@/components/countdown-timer';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useTimer } from '@/hooks/use-timer';
 import { PlayIcon } from 'lucide-react';
-import { useState } from 'react';
 
 export function MainScreen() {
-  const [timerMode, setTimerMode] = useState<'Focus' | 'Rest' | null>(null);
-  const [timerMinutes, setTimerMinutes] = useState(0);
-  const [totalWorkTime, setTotalWorkTime] = useState(0);
-  const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
-  const [goalHoursInput, setGoalHoursInput] = useState('1');
-  const [savedGoalHours, setSavedGoalHours] = useState<number | null>(null);
+  const timer = useTimer();
+  const mode = timer.timers[0]?.mode ?? null;
+  const minutes = timer.timers[0]?.minutes ?? 0;
+  // const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
+  // const [goalHoursInput, setGoalHoursInput] = useState('1');
 
-  const handleSaveGoal = () => {
-    const parsedHours = Number(goalHoursInput);
-    const normalized =
-      Number.isFinite(parsedHours) && parsedHours >= 0 ? parsedHours : 0;
+  // const handleSaveGoal = () => {
+  //   const parsedHours = Number(goalHoursInput);
+  //   const normalized =
+  //     Number.isFinite(parsedHours) && parsedHours >= 0 ? parsedHours : 0;
 
-    setGoalHoursInput(String(normalized));
-    setSavedGoalHours(normalized);
-    setIsGoalDialogOpen(false);
-  };
+  //   setGoalHoursInput(String(normalized));
+  //   timer.setGoal(normalized);
+  //   setIsGoalDialogOpen(false);
+  // };
 
-  const pad = (value: number) => value.toString().padStart(2, '0');
+  // const pad = (value: number) => value.toString().padStart(2, '0');
 
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
-  };
+  // const formatTime = (seconds: number) => {
+  //   const hours = Math.floor(seconds / 3600);
+  //   const minutes = Math.floor((seconds % 3600) / 60);
+  //   const secs = seconds % 60;
+  //   return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
+  // };
 
-  const formatGoalRemaining = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    // hours:minutes の形式に変換、両方とも２桁表示
-    return `${pad(hours)}:${pad(minutes)}`;
-  };
+  // const formatGoalRemaining = (seconds: number): string => {
+  //   const hours = Math.floor(seconds / 3600);
+  //   const minutes = Math.floor((seconds % 3600) / 60);
+  //   // hours:minutes の形式に変換、両方とも２桁表示
+  //   return `${pad(hours)}:${pad(minutes)}`;
+  // };
 
-  const goalRemainingSeconds =
-    savedGoalHours !== null
-      ? Math.max(savedGoalHours * 3600 - totalWorkTime, 0)
-      : null;
+  // const goalRemainingSeconds: number = timer.remainingGoalHours
+  //   ? timer.remainingGoalHours * 3600
+  //   : 0;
 
   const handleTimerComplete = () => {
-    if (timerMode === 'Focus') {
-      setTotalWorkTime((prev) => prev + timerMinutes * 60);
-    }
-    setTimerMode(null);
+    timer.onFinish();
   };
 
   const handleCancel = () => {
-    setTimerMode(null);
+    timer.cancel();
   };
 
-  if (timerMode) {
-    const timerSeconds = timerMinutes * 60;
-
+  if (mode) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background">
         <CountdownTimer
-          title={timerMode}
-          initialSeconds={timerSeconds}
+          title={mode}
+          initialSeconds={minutes * 60}
           onComplete={handleTimerComplete}
           onCancel={handleCancel}
         />
@@ -81,10 +74,10 @@ export function MainScreen() {
               // Today's Work Time
               <div className="text-center space-y-2">
                 <h2 className="text-lg font-medium text-muted-foreground">
-                  {totalWorkTime === 0 ? ':' : "Today's Work Time:"}
+                  {timer.totalMinutes === 0 ? ':' : "Today's Work Time:"}
                 </h2>
                 <div className="font-mono text-5xl font-bold tracking-wider text-foreground tabular-nums">
-                  {formatTime(totalWorkTime)}
+                  {formatTime(timer.totalMinutes * 60)}
                 </div>
               </div>
             ) : (
@@ -214,31 +207,95 @@ export function MainScreen() {
           {/* Button Section */}
           <div className="space-y-4 border-t border-border">
             <div className="flex flex-col gap-3 ">
-              <Button className="h-14 w-full text-lg bg-emerald-300 justify-left">
+              <Button
+                className="h-14 w-full text-lg bg-emerald-300 justify-left"
+                onClick={() => {
+                  timer.setTimer([
+                    { mode: 'focus', minutes: 5 },
+                    { mode: 'rest', minutes: 5 },
+                    { mode: 'focus', minutes: 15 },
+                    { mode: 'rest', minutes: 5 },
+                    { mode: 'focus', minutes: 30 },
+                  ]);
+                }}
+              >
                 やる気ない： 5-15-30分セット
               </Button>
-              <Button className="h-14 w-full text-lg justify-left bg-emerald-500">
+              <Button
+                className="h-14 w-full text-lg justify-left bg-emerald-500"
+                onClick={() => {
+                  timer.setTimer([
+                    { mode: 'focus', minutes: 30 },
+                    { mode: 'rest', minutes: 5 },
+                    { mode: 'focus', minutes: 30 },
+                    { mode: 'rest', minutes: 5 },
+                    { mode: 'focus', minutes: 30 },
+                  ]);
+                }}
+              >
                 いつも通り： 30-30-30分セット
               </Button>
-              <Button className="h-14 w-full text-lg justify-left bg-emerald-700">
+              <Button
+                className="h-14 w-full text-lg justify-left bg-emerald-700"
+                onClick={() => {
+                  timer.setTimer([
+                    { mode: 'focus', minutes: 30 },
+                    { mode: 'rest', minutes: 5 },
+                    { mode: 'focus', minutes: 60 },
+                    { mode: 'rest', minutes: 10 },
+                    { mode: 'focus', minutes: 60 },
+                  ]);
+                }}
+              >
                 やる気満々： 30-60-60分セット
               </Button>
-              <Button className="h-14 w-full text-lg justify-left bg-emerald-900">
+              <Button
+                className="h-14 w-full text-lg justify-left bg-emerald-900"
+                onClick={() => {
+                  timer.setTimer([
+                    { mode: 'focus', minutes: 60 },
+                    { mode: 'rest', minutes: 5 },
+                    { mode: 'focus', minutes: 60 },
+                    { mode: 'rest', minutes: 5 },
+                    { mode: 'focus', minutes: 60 },
+                  ]);
+                }}
+              >
                 禅{'　　　　'}：60-60-60分セット
               </Button>
             </div>
           </div>
           <div className="border-t border-border pt-4 space-x-2">
-            <Button className="text-muted bg-emerald-300 rounded-full bg">
+            <Button
+              className="text-muted bg-emerald-300 rounded-full bg"
+              onClick={() => {
+                timer.setTimer([{ mode: 'focus', minutes: 15 }]);
+              }}
+            >
               15:00 <PlayIcon className="size-4" />
             </Button>
-            <Button className="text-muted bg-emerald-500 rounded-full">
+            <Button
+              className="text-muted bg-emerald-500 rounded-full"
+              onClick={() => {
+                timer.setTimer([{ mode: 'focus', minutes: 30 }]);
+              }}
+            >
               30:00 <PlayIcon className="size-4" />
             </Button>
-            <Button className="text-muted bg-emerald-700 rounded-full">
+            <Button
+              className="text-muted bg-emerald-700 rounded-full"
+              onClick={() => {
+                timer.setTimer([{ mode: 'focus', minutes: 60 }]);
+              }}
+            >
               60:00 <PlayIcon className="size-4" />
             </Button>
-            <Button className="text-muted bg-emerald-900 rounded-full">
+            <Button
+              className="text-muted bg-emerald-900 rounded-full"
+              onClick={() => {
+                timer.setTimer([{ mode: 'focus', minutes: 90 }]);
+              }}
+            >
               90:00 <PlayIcon className="size-4" />
             </Button>
           </div>
