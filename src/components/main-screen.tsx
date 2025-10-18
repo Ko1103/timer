@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTimer } from '@/hooks/use-timer';
 import { cn } from '@/lib/utils';
 import { PlayIcon } from 'lucide-react';
 import React, { useState } from 'react';
@@ -41,12 +42,9 @@ const TimerButton: React.FC<{
 };
 
 export function MainScreen() {
-  const [timerMode, setTimerMode] = useState<'Focus' | 'Rest' | null>(null);
-  const [timerMinutes, setTimerMinutes] = useState(0);
-  const [totalWorkTime, setTotalWorkTime] = useState(0);
+  const timer = useTimer();
   const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
   const [goalHoursInput, setGoalHoursInput] = useState('1');
-  const [savedGoalHours, setSavedGoalHours] = useState<number | null>(null);
 
   const handleSaveGoal = () => {
     const parsedHours = Number(goalHoursInput);
@@ -54,7 +52,7 @@ export function MainScreen() {
       Number.isFinite(parsedHours) && parsedHours >= 0 ? parsedHours : 0;
 
     setGoalHoursInput(String(normalized));
-    setSavedGoalHours(normalized);
+    timer.setGoal(normalized);
     setIsGoalDialogOpen(false);
   };
 
@@ -74,30 +72,24 @@ export function MainScreen() {
     return `${pad(hours)}:${pad(minutes)}`;
   };
 
-  const goalRemainingSeconds =
-    savedGoalHours !== null
-      ? Math.max(savedGoalHours * 3600 - totalWorkTime, 0)
-      : null;
+  const goalRemainingSeconds: number = timer.remainingGoalHours
+    ? timer.remainingGoalHours * 3600
+    : 0;
 
   const handleTimerComplete = () => {
-    if (timerMode === 'Focus') {
-      setTotalWorkTime((prev) => prev + timerMinutes * 60);
-    }
-    setTimerMode(null);
+    timer.onFinish();
   };
 
   const handleCancel = () => {
-    setTimerMode(null);
+    timer.cancel();
   };
 
-  if (timerMode) {
-    const timerSeconds = timerMinutes * 60;
-
+  if (timer.mode) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background">
         <CountdownTimer
-          title={timerMode}
-          initialSeconds={timerSeconds}
+          title={timer.mode}
+          initialSeconds={timer.minutes * 60}
           onComplete={handleTimerComplete}
           onCancel={handleCancel}
         />
@@ -110,14 +102,14 @@ export function MainScreen() {
       <Card className="w-full max-w-md mx-auto p-8 bg-card">
         <div className="flex flex-col gap-8">
           <div className="space-y-2">
-            {savedGoalHours === null ? (
+            {timer.goalHours === null ? (
               // Today's Work Time
               <div className="text-center space-y-2">
                 <h2 className="text-lg font-medium text-muted-foreground">
-                  {totalWorkTime === 0 ? ':' : "Today's Work Time:"}
+                  {timer.totalMinutes === 0 ? ':' : "Today's Work Time:"}
                 </h2>
                 <div className="font-mono text-5xl font-bold tracking-wider text-foreground tabular-nums">
-                  {formatTime(totalWorkTime)}
+                  {formatTime(timer.totalMinutes * 60)}
                 </div>
               </div>
             ) : (
@@ -254,32 +246,28 @@ export function MainScreen() {
                 minutes={15}
                 type="focus"
                 onClick={() => {
-                  setTimerMinutes(15);
-                  setTimerMode('Focus');
+                  timer.setTimer([{ mode: 'focus', minutes: 15 }]);
                 }}
               />
               <TimerButton
                 minutes={30}
                 type="focus"
                 onClick={() => {
-                  setTimerMinutes(30);
-                  setTimerMode('Focus');
+                  timer.setTimer([{ mode: 'focus', minutes: 30 }]);
                 }}
               />
               <TimerButton
                 minutes={60}
                 type="focus"
                 onClick={() => {
-                  setTimerMinutes(60);
-                  setTimerMode('Focus');
+                  timer.setTimer([{ mode: 'focus', minutes: 60 }]);
                 }}
               />
               <TimerButton
                 minutes={90}
                 type="focus"
                 onClick={() => {
-                  setTimerMinutes(90);
-                  setTimerMode('Focus');
+                  timer.setTimer([{ mode: 'focus', minutes: 90 }]);
                 }}
               />
             </div>
