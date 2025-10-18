@@ -58,6 +58,7 @@ export function useTimer() {
     mode,
     minutes,
     totalMinutes,
+    goalHours,
     remainingGoalHours,
     onFinish,
     setTimer,
