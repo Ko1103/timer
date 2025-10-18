@@ -8,9 +8,6 @@ export type Timer = {
 };
 
 export function useTimer() {
-  // 現在のモード
-  const [mode, setMode] = useState<'focus' | 'rest' | null>(null);
-  const [minutes, setMinutes] = useState(0);
   // タイマーのリスト
   const [timers, setTimers] = useState<Timer[]>([]);
   // 1日の合計時間(分)
@@ -22,26 +19,31 @@ export function useTimer() {
   // タイマーをセットする（複数も可能)
   const setTimer = (timerSets: Timer[]) => {
     setTimers(timerSets);
-    const first = timerSets[0];
-    setMinutes(first.minutes);
-    setMode(first.mode);
   };
 
-  // タイマーを開始
+  // タイマーを終了
   const onFinish = () => {
+    const first = timers[0] ?? null;
+    if (first === null) return;
+
+    // 合計時間を更新
+    let minutes = first.minutes ?? 0;
+    if (first.mode === 'rest') {
+      minutes = 0;
+    }
     setTotalMinutes((prev) => prev + minutes);
-    const nextTimers = timers.slice(1);
-    if (nextTimers.length > 0) {
+
+    // 次のタイマーをセット
+    if (timers.length > 0) {
+      const nextTimers = timers.slice(1);
       setTimer(nextTimers);
     } else {
-      setMode(null);
+      setTimer([]);
     }
   };
 
   // キャンセル
   const cancel = () => {
-    setMode(null);
-    setMinutes(0);
     setTimers([]);
   };
 
@@ -54,9 +56,21 @@ export function useTimer() {
     setGoalHours(hours);
   };
 
+  // 休憩をスキップして次のタイマーを開始
+  const skipRest = () => {
+    const first = timers[0];
+    if (first.mode === 'rest') {
+      const nextTimers = timers.slice(1);
+      if (nextTimers.length > 0) {
+        setTimer(nextTimers);
+      } else {
+        setTimer([]);
+      }
+    }
+  };
+
   return {
-    mode,
-    minutes,
+    timers,
     totalMinutes,
     goalHours,
     remainingGoalHours,
@@ -65,5 +79,6 @@ export function useTimer() {
     cancel,
     pause,
     setGoal,
+    skipRest,
   };
 }

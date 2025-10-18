@@ -8,6 +8,8 @@ import { PlayIcon } from 'lucide-react';
 
 export function MainScreen() {
   const timer = useTimer();
+  const mode = timer.timers[0]?.mode ?? null;
+  const minutes = timer.timers[0]?.minutes ?? 0;
   // const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
   // const [goalHoursInput, setGoalHoursInput] = useState('1');
 
@@ -49,12 +51,12 @@ export function MainScreen() {
     timer.cancel();
   };
 
-  if (timer.mode) {
+  if (mode) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background">
         <CountdownTimer
-          title={timer.mode}
-          initialSeconds={timer.minutes * 60}
+          title={mode}
+          initialSeconds={minutes * 60}
           onComplete={handleTimerComplete}
           onCancel={handleCancel}
         />
