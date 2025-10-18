@@ -13,16 +13,16 @@ export function useTimer() {
   const [minutes, setMinutes] = useState(0);
   // タイマーのリスト
   const [timers, setTimers] = useState<Timer[]>([]);
-  //　　1日の合計時間(分)
+  // 1日の合計時間(分)
   const [totalMinutes, setTotalMinutes] = useState(0);
   // 目標時間(時間)
   const [goalHours, setGoalHours] = useState<number | null>(null);
   const remainingGoalHours = goalHours ? goalHours - totalMinutes / 60 : null;
 
   // タイマーをセットする（複数も可能)
-  const setTimer = (timers: Timer[]) => {
-    setTimers(timers);
-    const first = timers[0];
+  const setTimer = (timerSets: Timer[]) => {
+    setTimers(timerSets);
+    const first = timerSets[0];
     setMinutes(first.minutes);
     setMode(first.mode);
   };
