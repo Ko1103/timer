@@ -1,5 +1,5 @@
 module.exports = {
-  extends: 'erb',
+  extends: ['erb', 'prettier'],
   plugins: ['@typescript-eslint'],
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
@@ -10,6 +10,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'import/prefer-default-export': 'off',
     'import/no-import-module-exports': 'off',
+    'import/order': 'off',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
     'no-unused-vars': 'off',
@@ -17,6 +18,7 @@ module.exports = {
     'react/require-default-props': 'off',
     'no-nested-ternary': 'off',
     'react/jsx-props-no-spreading': 'off',
+    'react/function-component-definition': 'off',
   },
   parserOptions: {
     ecmaVersion: 2022,

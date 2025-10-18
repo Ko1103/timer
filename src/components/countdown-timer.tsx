@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useCallback, useEffect, useState } from 'react';
 
 interface CountdownTimerProps {
   title: 'Rest' | 'Focus';
@@ -54,7 +54,15 @@ export function CountdownTimer({
     onCancel?.();
   };
 
-  const progress = ((initialSeconds - timeLeft) / initialSeconds) * 100;
+  const progressRatio = initialSeconds
+    ? title === 'Focus'
+      ? timeLeft / initialSeconds
+      : (initialSeconds - timeLeft) / initialSeconds
+    : 0;
+
+  const circumference = 2 * Math.PI * 45;
+  const strokeDashoffset =
+    circumference * (1 - Math.min(Math.max(progressRatio, 0), 1));
 
   return (
     <Card className="w-full max-w-md mx-auto p-8 bg-card">
@@ -89,16 +97,18 @@ export function CountdownTimer({
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              strokeDasharray={`${2 * Math.PI * 45}`}
-              strokeDashoffset={`${2 * Math.PI * 45 * (1 - progress / 100)}`}
+              strokeDasharray={`${circumference}`}
+              strokeDashoffset={`${strokeDashoffset}`}
               strokeLinecap="round"
-              className="text-accent transition-all duration-1000 ease-linear"
+              className={`transition-all duration-1000 ease-linear ${
+                title === 'Focus' ? 'text-blue-600' : 'text-emerald-600'
+              }`}
             />
           </svg>
 
           {/* Time Text */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="font-mono text-5xl font-bold tracking-wider text-foreground tabular-nums">
+            <span className="font-mono text-4xl font-bold tracking-wider text-foreground tabular-nums">
               {formatTime(timeLeft)}
             </span>
           </div>
