@@ -169,8 +169,8 @@
     "webpack-merge": "^6.0.1"
   },
   "build": {
-    "productName": "KeepFocus",
-    "appId": "app.keepfocus",
+    "productName": "HibiFocus",
+    "appId": "app.hibifocus",
     "asar": true,
     "afterSign": ".erb/scripts/notarize.js",
     "asarUnpack": "**\\*.{node,dll}",

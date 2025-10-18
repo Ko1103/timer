@@ -54,17 +54,17 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'KeepFocus',
+      label: 'HibiFocus',
       submenu: [
         {
-          label: 'About KeepFocus',
+          label: 'About HibiFocus',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide KeepFocus',
+          label: 'Hide HibiFocus',
           accelerator: 'Command+H',
           selector: 'hide:',
         },
