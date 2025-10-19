@@ -35,5 +35,16 @@
     "23": "In stillness, you’ll find the answer.",
     "24": "This moment right now is the only reality.",
     "25": "Let go of the outcome and focus on the process."
+  },
+  "mainScreen": {
+    "moodTitle": "Choose by mood",
+    "lazy": "Lazy: 5-15-30 minutes",
+    "steady": "Steady: 30-30-30 minutes",
+    "focus": "Focus: 30-60-60 minutes",
+    "zen": "Zen: 60-60-60 minutes",
+    "timeTitle": "Choose by time",
+    "footer": {
+      "total": "Total: {{hours}}:{{minutes}}"
+    }
   }
 }
