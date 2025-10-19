@@ -1,44 +1,64 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { TimerMode } from '@/hooks/use-timer';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Timer } from '@/hooks/use-timer';
+import { cn } from '@/lib/utils';
+import {
+  CircleDotIcon,
+  CoffeeIcon,
+  PauseIcon,
+  PlayIcon,
+  SkipForwardIcon,
+  XIcon,
+} from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-interface CountdownTimerProps {
-  title: TimerMode;
-  initialSeconds: number;
-  onComplete?: () => void;
-  onCancel?: () => void;
-}
+const noop = () => {};
 
-export const CountdownTimer: React.FC<CountdownTimerProps> = ({
-  title,
-  initialSeconds,
-  onComplete,
-  onCancel,
-}) => {
-  const [timeLeft, setTimeLeft] = useState(initialSeconds);
+export const CountdownTimer: React.FC<{
+  timer: Timer;
+  nextTimer?: Timer;
+  onComplete: () => void;
+  onCancel: () => void;
+  onSkip: () => void;
+}> = ({ timer, onComplete, onCancel, nextTimer, onSkip }) => {
+  const { t } = useTranslation();
+  const [timeLeft, setTimeLeft] = useState(timer.minutes * 60);
   const [isRunning, setIsRunning] = useState(true);
+  const isFocus = timer.mode === 'focus';
 
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | undefined;
+    setTimeLeft(timer.minutes * 60);
+    setIsRunning(timer.mode !== 'rest');
+  }, [timer.minutes, timer.mode]);
 
-    if (isRunning && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            setIsRunning(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else if (timeLeft <= 0 && onComplete) {
-      onComplete();
+  useEffect(() => {
+    if (!isRunning) {
+      return noop;
     }
 
-    return interval ? () => clearInterval(interval) : undefined;
+    if (timeLeft <= 0) {
+      setIsRunning(false);
+      onComplete();
+      return noop;
+    }
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        const next = prev - 60;
+        return next > 0 ? next : 0;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [isRunning, timeLeft, onComplete]);
 
   const formatTime = useCallback((seconds: number) => {
@@ -50,81 +70,121 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   }, []);
 
   const handleCancel = () => {
-    setIsRunning(false);
-    setTimeLeft(initialSeconds);
-    onCancel?.();
+    onCancel();
   };
 
-  const progressRatio = initialSeconds
-    ? title === 'focus'
-      ? timeLeft / initialSeconds
-      : (initialSeconds - timeLeft) / initialSeconds
-    : 0;
-
-  const circumference = 2 * Math.PI * 45;
-  const strokeDashoffset =
-    circumference * (1 - Math.min(Math.max(progressRatio, 0), 1));
+  const handlePause = () => {
+    setIsRunning(!isRunning);
+  };
 
   return (
-    <Card className="w-full max-w-md mx-auto p-8 bg-card">
-      <div className="flex flex-col items-center gap-8">
-        {/* Title */}
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            {title}
-          </h2>
+    <div
+      className={cn(
+        'flex flex-col min-h-screen w-full max-w-md mx-auto',
+        isFocus
+          ? 'bg-muted text-muted-foreground'
+          : 'bg-emerald-500 text-white',
+      )}
+    >
+      {/* ヘッダー */}
+      <div className="flex justify-between items-center p-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className={cn(
+                'text-muted-foreground rounded-full ',
+                isFocus ? 'text-muted-foreground' : 'text-white',
+              )}
+              onClick={handleCancel}
+            >
+              <XIcon className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Cancel</TooltipContent>
+        </Tooltip>
+
+        {timer.mode === 'rest' && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  'rounded-full text-muted-foreground',
+                  isFocus ? 'text-muted-foreground' : 'text-muted',
+                )}
+                onClick={onSkip}
+              >
+                <SkipForwardIcon className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Skip</TooltipContent>
+          </Tooltip>
+        )}
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center gap-4">
+        <div
+          className={cn(
+            'text-center text-lg text-muted-foreground flex items-center gap-2 justify-center',
+            isFocus ? 'text-muted-foreground' : 'text-muted',
+          )}
+        >
+          {isFocus ? (
+            <>
+              <span>Focus</span>
+              <CircleDotIcon className="size-6" />
+            </>
+          ) : (
+            <>
+              <span>Let&apos;s take a break</span>
+              <CoffeeIcon className="size-6" />
+            </>
+          )}
         </div>
-
-        {/* Timer Display */}
-        <div className="relative w-full aspect-square max-w-[280px]">
-          {/* Progress Circle */}
-          <svg
-            className="absolute inset-0 w-full h-full -rotate-90"
-            viewBox="0 0 100 100"
-          >
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="text-muted opacity-20"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeDasharray={`${circumference}`}
-              strokeDashoffset={`${strokeDashoffset}`}
-              strokeLinecap="round"
-              className={`transition-all duration-1000 ease-linear ${
-                title === 'focus' ? 'text-blue-600' : 'text-emerald-600'
-              }`}
-            />
-          </svg>
-
-          {/* Time Text */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="font-mono text-4xl font-bold tracking-wider text-foreground tabular-nums">
-              {formatTime(timeLeft)}
-            </span>
+        <div className="w-full">
+          <div className="flex flex-col items-center gap-8">
+            {/* Timer Display */}
+            {/* Time Text */}
+            <div className="flex items-center justify-center">
+              <span
+                className={cn(
+                  'font-mono text-4xl font-bold tracking-wider text-foreground tabular-nums',
+                  isFocus ? 'text-foreground' : 'text-muted',
+                )}
+              >
+                {formatTime(timeLeft)}
+              </span>
+            </div>
           </div>
         </div>
-
-        {/* Cancel Button */}
-        <Button
-          onClick={handleCancel}
-          variant="outline"
-          size="lg"
-          className="w-full max-w-[200px] font-medium bg-transparent"
-        >
-          キャンセル
-        </Button>
+        <div className="text-center">
+          <Button size="icon" className="rounded-full" onClick={handlePause}>
+            {isRunning ? (
+              <PauseIcon className="size-4" />
+            ) : (
+              <PlayIcon className="size-4" />
+            )}
+          </Button>
+        </div>
       </div>
-    </Card>
+
+      <footer className="mt-auto w-full px-3 py-2">
+        {nextTimer && (
+          <div
+            className={cn(
+              'text-right text-sm',
+              isFocus ? 'text-muted-foreground' : 'text-muted',
+            )}
+          >
+            {nextTimer.mode === 'rest'
+              ? t('nextMessage.rest', { minutes: nextTimer?.minutes })
+              : t('nextMessage.focus', { minutes: nextTimer?.minutes })}
+          </div>
+        )}
+      </footer>
+    </div>
   );
 };

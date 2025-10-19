@@ -1,7 +1,39 @@
 {
-    "appName": "Hibi Focus",
-    "lazy": "Lazy",
-    "steady": "Steady",
-    "focus": "Focus",
-    "zen": "Zen"
+  "appName": "Hibi Focus",
+  "lazy": "Lazy",
+  "steady": "Steady",
+  "focus": "Focus",
+  "zen": "Zen",
+  "nextMessage": {
+    "rest": "Next is {{minutes}} minutes of rest.",
+    "focus": "Next is {{minutes}} minutes of focus."
+  },
+  "skipRest": "Skip Rest",
+  "quote": {
+    "1": "Do your best with what you can do today.",
+    "2": "It doesn’t have to be perfect. Starting is what matters most.",
+    "3": "Even a small step forward is better than standing still.",
+    "4": "The first step in the morning sets the tone for the day.",
+    "5": "If you can focus one minute longer than yesterday, you’ve won.",
+    "6": "Focus only on what’s in front of you right now.",
+    "7": "Don’t compare yourself to others; compare yourself to yesterday’s you.",
+    "8": "Focus isn’t talent. It’s a habit.",
+    "9": "Strength is the ability to return to focus every time you drift.",
+    "10": "Take a deep breath and refocus.",
+    "11": "When you feel like quitting, keep going for one more minute.",
+    "12": "Small consistency builds great confidence.",
+    "13": "No need to rush. Just don’t stop.",
+    "14": "As long as you’re moving forward, there’s no failure.",
+    "15": "Even if no one’s watching, you are.",
+    "16": "You did well today. Take a little rest.",
+    "17": "The time you’ve built up will transform you.",
+    "18": "Feel pride, not impatience.",
+    "19": "Tomorrow, move forward just a little more.",
+    "20": "One step at a time — that’s real growth.",
+    "21": "Even time spent doing nothing is part of progress.",
+    "22": "When your breath settles, so does your mind.",
+    "23": "In stillness, you’ll find the answer.",
+    "24": "This moment right now is the only reality.",
+    "25": "Let go of the outcome and focus on the process."
+  }
 }
