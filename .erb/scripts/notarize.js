@@ -1,5 +1,32 @@
+const path = require('path');
+const fs = require('fs');
 const { notarize } = require('@electron/notarize');
 const { build } = require('../../package.json');
+
+const repoRoot = path.resolve(__dirname, '../..');
+const defaultApiKeyFile = 'AuthKey_74TRB268BB.p8';
+
+const resolveValue = (value, placeholder) => {
+  if (!value) return placeholder;
+  if (value.trim() === '') return placeholder;
+  return value;
+};
+
+const APPLE_KEY_ID = resolveValue(process.env.APPLE_KEY_ID, '74TRB268BB');
+const APPLE_KEY_ISSUER = resolveValue(
+  process.env.APPLE_KEY_ISSUER,
+  '<SET_APPLE_KEY_ISSUER>',
+);
+const APPLE_TEAM_ID = resolveValue(
+  process.env.APPLE_TEAM_ID,
+  '<SET_APPLE_TEAM_ID>',
+);
+const APPLE_KEY_PATH = resolveValue(
+  process.env.APPLE_KEY_PATH,
+  path.join(repoRoot, defaultApiKeyFile),
+);
+
+const isPlaceholder = (value) => value.startsWith('<SET_');
 
 exports.default = async function notarizeMacos(context) {
   const { electronPlatformName, appOutDir } = context;
@@ -7,26 +34,15 @@ exports.default = async function notarizeMacos(context) {
     return;
   }
 
-  if (process.env.CI !== 'true') {
-    console.warn('Skipping notarizing step. Packaging is not running in CI');
-    return;
-  }
-
-  const hasNotaryAccountCreds =
-    'APPLE_ID' in process.env && 'APPLE_ID_PASS' in process.env;
+  const apiKeyPathExists = fs.existsSync(APPLE_KEY_PATH);
   const hasApiKeyCreds =
-    'APPLE_APP_SPECIFIC_PASSWORD' in process.env &&
-    'APPLE_TEAM_ID' in process.env &&
-    'APPLE_KEY_ID' in process.env &&
-    'APPLE_KEY_ISSUER' in process.env &&
-    'APPLE_KEY_PATH' in process.env;
-
-  if (!hasNotaryAccountCreds && !hasApiKeyCreds) {
-    console.warn(
-      'Skipping notarizing step. Provide either Apple ID creds (APPLE_ID, APPLE_ID_PASS, APPLE_TEAM_ID) or App Store Connect API key creds (APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_KEY_ISSUER, APPLE_KEY_PATH).',
-    );
-    return;
-  }
+    APPLE_KEY_ID &&
+    APPLE_KEY_ISSUER &&
+    APPLE_TEAM_ID &&
+    APPLE_KEY_PATH &&
+    !isPlaceholder(APPLE_KEY_ISSUER) &&
+    !isPlaceholder(APPLE_TEAM_ID) &&
+    apiKeyPathExists;
 
   const appName = context.packager.appInfo.productFilename;
 
@@ -39,18 +55,15 @@ exports.default = async function notarizeMacos(context) {
   if (hasApiKeyCreds) {
     await notarize({
       ...baseOptions,
-      appleApiKeyId: process.env.APPLE_KEY_ID,
-      appleApiIssuer: process.env.APPLE_KEY_ISSUER,
-      appleApiKey: process.env.APPLE_KEY_PATH,
-      teamId: process.env.APPLE_TEAM_ID,
+      appleApiKeyId: APPLE_KEY_ID,
+      appleApiIssuer: APPLE_KEY_ISSUER,
+      appleApiKey: APPLE_KEY_PATH,
+      teamId: APPLE_TEAM_ID,
     });
     return;
   }
 
-  await notarize({
-    ...baseOptions,
-    appleId: process.env.APPLE_ID,
-    appleIdPassword: process.env.APPLE_ID_PASS,
-    teamId: process.env.APPLE_TEAM_ID,
-  });
+  console.warn(
+    'Skipping notarizing step. Provide a valid App Store Connect API key (.p8) and set APPLE_TEAM_ID/APPLE_KEY_ISSUER.',
+  );
 };
