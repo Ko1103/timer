@@ -173,7 +173,6 @@
   },
   "build": {
     "productName": "HibiFocus",
-    "appId": "app.hibifocus",
     "asar": true,
     "afterSign": ".erb/scripts/notarize.js",
     "asarUnpack": "**\\*.{node,dll}",
@@ -184,15 +183,13 @@
     ],
     "mac": {
       "notarize": false,
-      "target": {
-        "target": "default",
-        "arch": [
-          "arm64",
-          "x64"
-        ]
-      },
-      "type": "distribution",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
       "hardenedRuntime": true,
+      "type": "distribution",
       "entitlements": "assets/entitlements.mac.plist",
       "entitlementsInherit": "assets/entitlements.mac.plist",
       "gatekeeperAssess": false
@@ -232,8 +229,8 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "Ko1103",
+      "repo": "timer"
     }
   },
   "collective": {
