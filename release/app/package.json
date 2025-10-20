@@ -1,12 +1,12 @@
 {
-  "name": "electron-react-boilerplate",
+  "name": "hibi-focus",
   "version": "4.6.0",
-  "description": "A foundation for scalable desktop apps",
+  "description": "A timer app for Mac to help you stay focused",
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://github.com/electron-react-boilerplate"
+    "name": "Ko Yamaura",
+    "email": "ko.foot1103@gmail.com",
+    "url": "https://github.com/Ko1103/timer"
   },
   "main": "./dist/main/main.js",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "keep-focus",
+  "name": "hibi-focus",
   "description": "A timer app for Mac to help you stay focused",
   "repository": {
     "type": "git",
@@ -172,6 +172,7 @@
     "webpack-merge": "^6.0.1"
   },
   "build": {
+    "appId": "com.ko-yamaura.hibifocus",
     "productName": "HibiFocus",
     "asar": true,
     "afterSign": ".erb/scripts/notarize.js",
@@ -212,12 +213,6 @@
       "target": [
         "nsis"
       ]
-    },
-    "linux": {
-      "target": [
-        "AppImage"
-      ],
-      "category": "Development"
     },
     "directories": {
       "app": "release/app",
