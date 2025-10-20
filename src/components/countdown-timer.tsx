@@ -51,7 +51,7 @@ export const CountdownTimer: React.FC<{
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
-        const next = prev - 60;
+        const next = prev - 1;
         return next > 0 ? next : 0;
       });
     }, 1000);
