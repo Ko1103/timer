@@ -8,7 +8,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, globalShortcut, ipcMain, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
@@ -116,6 +116,32 @@ const createWindow = async () => {
   new AppUpdater();
 };
 
+const registerShortcuts = () => {
+  const toggleShortcut = 'CommandOrControl+E';
+  if (globalShortcut.isRegistered(toggleShortcut)) {
+    globalShortcut.unregister(toggleShortcut);
+  }
+
+  const registered = globalShortcut.register(toggleShortcut, async () => {
+    if (!mainWindow) {
+      await createWindow();
+      return;
+    }
+
+    if (!mainWindow.isVisible()) {
+      mainWindow.show();
+      mainWindow.focus();
+      return;
+    }
+
+    mainWindow.hide();
+  });
+
+  if (!registered) {
+    log.error(`Failed to register global shortcut: ${toggleShortcut}`);
+  }
+};
+
 /**
  * Add event listeners...
  */
@@ -131,7 +157,8 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
-    createWindow();
+    // eslint-disable-next-line promise/no-nesting
+    createWindow().then(registerShortcuts).catch(console.error);
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
@@ -139,3 +166,7 @@ app
     });
   })
   .catch(console.log);
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
+});
