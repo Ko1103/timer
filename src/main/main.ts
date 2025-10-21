@@ -39,38 +39,47 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-const handleTimerFinished = (_event: any, payload: { minutes: number }) => {
+const handleTimerFinished = (
+  _event: any,
+  payload: { minutes: number; mode: string },
+) => {
   if (!app.isReady()) return;
 
-  if (!Notification.isSupported()) {
-    log.warn('Notification API is not supported on this platform');
-    return;
-  }
-
+  // アプリを即座に表示・フォーカス
   if (!mainWindow) {
-    log.warn('Main window is not available to focus after notification click');
-  }
-
-  const minutes = payload.minutes ?? 0;
-  const notification = new Notification({
-    title: `Finished: ${minutes}-minute timer`,
-    body: 'Great job! Take a short break.',
-  });
-
-  notification.on('click', () => {
-    if (!mainWindow) {
-      // eslint-disable-next-line no-use-before-define
-      createWindow().catch((error) => log.error(error));
-      return;
-    }
-
+    createWindow().catch((error) => log.error(error));
+  } else {
     if (!mainWindow.isVisible()) {
       mainWindow.show();
     }
     mainWindow.focus();
-  });
+  }
 
-  notification.show();
+  // 通知も表示（オプション）
+  if (Notification.isSupported()) {
+    const minutes = payload.minutes ?? 0;
+    const mode = payload.mode === 'focus' ? 'Focus' : 'Break';
+    const notification = new Notification({
+      title: `${mode} timer finished!`,
+      body: `Your ${minutes}-minute ${mode.toLowerCase()} session is complete.`,
+    });
+
+    notification.on('click', () => {
+      if (!mainWindow) {
+        createWindow().catch((error) => log.error(error));
+        return;
+      }
+
+      if (!mainWindow.isVisible()) {
+        mainWindow.show();
+      }
+      mainWindow.focus();
+    });
+
+    notification.show();
+  } else {
+    log.warn('Notification API is not supported on this platform');
+  }
 };
 
 ipcMain.on('timer-finished', handleTimerFinished);

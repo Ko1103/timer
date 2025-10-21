@@ -47,12 +47,21 @@ export const CountdownTimer: React.FC<{
     if (timeLeft <= 0) {
       setIsRunning(false);
       onComplete();
+
+      // タイマー終了時にメインプロセスに通知を送信
+      if (window.electron) {
+        window.electron.ipcRenderer.sendMessage('timer-finished', {
+          minutes: timer.minutes,
+          mode: timer.mode,
+        });
+      }
+
       return noop;
     }
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
-        const next = prev - 1;
+        const next = prev - 60;
         return next > 0 ? next : 0;
       });
     }, 1000);
@@ -60,7 +69,7 @@ export const CountdownTimer: React.FC<{
     return () => {
       clearInterval(interval);
     };
-  }, [isRunning, timeLeft, onComplete]);
+  }, [isRunning, timeLeft, onComplete, timer.minutes, timer.mode]);
 
   const formatTime = useCallback((seconds: number) => {
     const hours = Math.floor(seconds / 3600);
