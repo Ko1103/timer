@@ -32,25 +32,6 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-const handleTimerFinished = (
-  _event: any,
-  payload: { minutes: number; mode: string },
-) => {
-  if (!app.isReady()) return;
-
-  // アプリを即座に表示・フォーカス
-  if (!mainWindow) {
-    createWindow().catch((error) => log.error(error));
-  } else {
-    if (!mainWindow.isVisible()) {
-      mainWindow.show();
-    }
-    mainWindow.focus();
-  }
-};
-
-ipcMain.on('timer-finished', handleTimerFinished);
-
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -135,6 +116,22 @@ const createWindow = async () => {
   // eslint-disable-next-line
   new AppUpdater();
 };
+
+const handleTimerFinished = () => {
+  if (!app.isReady()) return;
+
+  // アプリを即座に表示・フォーカス
+  if (!mainWindow) {
+    createWindow().catch((error) => log.error(error));
+  } else {
+    if (!mainWindow.isVisible()) {
+      mainWindow.show();
+    }
+    mainWindow.focus();
+  }
+};
+
+ipcMain.on('timer-finished', handleTimerFinished);
 
 const registerShortcuts = () => {
   const toggleShortcut = 'CommandOrControl+E';
