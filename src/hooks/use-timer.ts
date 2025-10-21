@@ -36,12 +36,6 @@ export function useTimer() {
     }
     setTotalMinutes((prev) => prev + minutes);
 
-    if (first.mode === 'focus') {
-      electron?.ipcRenderer.sendMessage('timer-finished', {
-        minutes: first.minutes,
-      });
-    }
-
     // 次のタイマーをセット
     if (timers.length > 0) {
       const nextTimers = timers.slice(1);
