@@ -2,19 +2,17 @@
  * Builds the DLL for development electron renderer process
  */
 
-import webpack from 'webpack';
 import path from 'path';
+import webpack from 'webpack';
 import { merge } from 'webpack-merge';
-import baseConfig from './webpack.config.base';
-import webpackPaths from './webpack.paths';
 import { dependencies } from '../../package.json';
 import checkNodeEnv from '../scripts/check-node-env';
+import baseConfig from './webpack.config.base';
+import webpackPaths from './webpack.paths';
 
 checkNodeEnv('development');
 
 const dist = webpackPaths.dllPath;
-
-const excludedDependencies = new Set(['tw-animate-css']);
 
 const configuration: webpack.Configuration = {
   context: webpackPaths.rootPath,
@@ -30,12 +28,10 @@ const configuration: webpack.Configuration = {
   /**
    * Use `module` from `webpack.config.renderer.dev.js`
    */
-  module: require('./webpack.config.renderer.dev').default.module,
+  module: (await import('./webpack.config.renderer.dev')).default.module,
 
   entry: {
-    renderer: Object.keys(dependencies || {}).filter(
-      (dependency) => !excludedDependencies.has(dependency),
-    ),
+    renderer: Object.keys(dependencies || {}),
   },
 
   output: {

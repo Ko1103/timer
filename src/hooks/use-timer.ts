@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-const electron =
-  typeof window !== 'undefined' && window.electron ? window.electron : null;
+// const electron =
+//   typeof window !== 'undefined' && window.electron ? window.electron : null;
 
 export type TimerMode = 'focus' | 'rest';
 
@@ -35,12 +35,6 @@ export function useTimer() {
       minutes = 0;
     }
     setTotalMinutes((prev) => prev + minutes);
-
-    if (first.mode === 'focus') {
-      electron?.ipcRenderer.sendMessage('timer-finished', {
-        minutes: first.minutes,
-      });
-    }
 
     // 次のタイマーをセット
     if (timers.length > 0) {
