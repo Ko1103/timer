@@ -8,14 +8,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import {
-  app,
-  BrowserWindow,
-  globalShortcut,
-  ipcMain,
-  Notification,
-  shell,
-} from 'electron';
+import { app, BrowserWindow, globalShortcut, ipcMain, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
@@ -53,32 +46,6 @@ const handleTimerFinished = (
       mainWindow.show();
     }
     mainWindow.focus();
-  }
-
-  // 通知も表示（オプション）
-  if (Notification.isSupported()) {
-    const minutes = payload.minutes ?? 0;
-    const mode = payload.mode === 'focus' ? 'Focus' : 'Break';
-    const notification = new Notification({
-      title: `${mode} timer finished!`,
-      body: `Your ${minutes}-minute ${mode.toLowerCase()} session is complete.`,
-    });
-
-    notification.on('click', () => {
-      if (!mainWindow) {
-        createWindow().catch((error) => log.error(error));
-        return;
-      }
-
-      if (!mainWindow.isVisible()) {
-        mainWindow.show();
-      }
-      mainWindow.focus();
-    });
-
-    notification.show();
-  } else {
-    log.warn('Notification API is not supported on this platform');
   }
 };
 

@@ -47,15 +47,6 @@ export const CountdownTimer: React.FC<{
     if (timeLeft <= 0) {
       setIsRunning(false);
       onComplete();
-
-      // タイマー終了時にメインプロセスに通知を送信
-      if (window.electron) {
-        window.electron.ipcRenderer.sendMessage('timer-finished', {
-          minutes: timer.minutes,
-          mode: timer.mode,
-        });
-      }
-
       return noop;
     }
 
