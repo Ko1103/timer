@@ -61,6 +61,29 @@ export const MainView: React.FC<{
   const formattedHours = totalHours.toString().padStart(2, '0');
   const formattedMinutes = remainingMinutes.toString().padStart(2, '0');
 
+  // 共通のプリセット定義
+  const presets: Record<string, Timer[]> = React.useMemo(
+    () => ({
+      '1': [
+        { mode: 'focus', minutes: 5 },
+        { mode: 'rest', minutes: 5 },
+      ],
+      '2': [
+        { mode: 'focus', minutes: 15 },
+        { mode: 'rest', minutes: 5 },
+      ],
+      '3': [
+        { mode: 'focus', minutes: 30 },
+        { mode: 'rest', minutes: 5 },
+      ],
+      '4': [
+        { mode: 'focus', minutes: 60 },
+        { mode: 'rest', minutes: 5 },
+      ],
+    }),
+    [],
+  );
+
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!document.hasFocus()) {
@@ -74,17 +97,7 @@ export const MainView: React.FC<{
         return;
       }
 
-      const presets: Record<string, Timer[]> = {
-        Digit1: [{ mode: 'focus', minutes: 5 }],
-        Digit2: [
-          { mode: 'focus', minutes: 15 },
-          { mode: 'rest', minutes: 5 },
-        ],
-        Digit3: [{ mode: 'focus', minutes: 30 }],
-        Digit4: [{ mode: 'focus', minutes: 60 }],
-      };
-
-      const timers = presets[event.code] ?? presets[`Digit${event.key}`];
+      const timers = presets[event.key];
 
       if (!timers) {
         return;
@@ -99,7 +112,7 @@ export const MainView: React.FC<{
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [setTimer]);
+  }, [setTimer, presets]);
 
   return (
     <TimerLayout className="flex flex-col">
@@ -138,41 +151,26 @@ export const MainView: React.FC<{
             minutes={5}
             shortcut="⌘ + 1"
             className="bg-emerald-300"
-            onClick={() => setTimer([{ mode: 'focus', minutes: 5 }])}
+            onClick={() => setTimer(presets['1'])}
           />
           <TimeButton
             minutes={15}
             shortcut="⌘ + 2"
             className="bg-emerald-500"
-            onClick={() =>
-              setTimer([
-                { mode: 'focus', minutes: 15 },
-                { mode: 'rest', minutes: 5 },
-              ])
-            }
+            onClick={() => setTimer(presets['2'])}
           />
 
           <TimeButton
             minutes={30}
             shortcut="⌘ + 3"
             className="bg-emerald-700"
-            onClick={() =>
-              setTimer([
-                { mode: 'focus', minutes: 30 },
-                { mode: 'rest', minutes: 5 },
-              ])
-            }
+            onClick={() => setTimer(presets['3'])}
           />
           <TimeButton
             minutes={60}
             shortcut="⌘ + 4"
             className="bg-emerald-900"
-            onClick={() =>
-              setTimer([
-                { mode: 'focus', minutes: 60 },
-                { mode: 'rest', minutes: 5 },
-              ])
-            }
+            onClick={() => setTimer(presets['4'])}
           />
         </div>
       </div>

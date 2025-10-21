@@ -8,7 +8,14 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { app, BrowserWindow, globalShortcut, ipcMain, shell } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  globalShortcut,
+  ipcMain,
+  Notification,
+  shell,
+} from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
@@ -31,6 +38,42 @@ ipcMain.on('ipc-example', async (event, arg) => {
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
+
+const handleTimerFinished = (_event: any, payload: { minutes: number }) => {
+  if (!app.isReady()) return;
+
+  if (!Notification.isSupported()) {
+    log.warn('Notification API is not supported on this platform');
+    return;
+  }
+
+  if (!mainWindow) {
+    log.warn('Main window is not available to focus after notification click');
+  }
+
+  const minutes = payload.minutes ?? 0;
+  const notification = new Notification({
+    title: `Finished: ${minutes}-minute timer`,
+    body: 'Great job! Take a short break.',
+  });
+
+  notification.on('click', () => {
+    if (!mainWindow) {
+      // eslint-disable-next-line no-use-before-define
+      createWindow().catch((error) => log.error(error));
+      return;
+    }
+
+    if (!mainWindow.isVisible()) {
+      mainWindow.show();
+    }
+    mainWindow.focus();
+  });
+
+  notification.show();
+};
+
+ipcMain.on('timer-finished', handleTimerFinished);
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
