@@ -12,6 +12,7 @@ import { app, BrowserWindow, globalShortcut, ipcMain, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from './constants';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -71,12 +72,12 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 448,
-    minWidth: 448,
-    maxWidth: 448,
-    height: 728,
-    minHeight: 728,
-    maxHeight: 728,
+    width: WINDOW_WIDTH,
+    minWidth: WINDOW_WIDTH,
+    maxWidth: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
+    minHeight: WINDOW_HEIGHT,
+    maxHeight: WINDOW_HEIGHT,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
