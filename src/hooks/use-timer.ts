@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-const electron =
-  typeof window !== 'undefined' && window.electron ? window.electron : null;
+// const electron =
+//   typeof window !== 'undefined' && window.electron ? window.electron : null;
 
 export type TimerMode = 'focus' | 'rest';
 
